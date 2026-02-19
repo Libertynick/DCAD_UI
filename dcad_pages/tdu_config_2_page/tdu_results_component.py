@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import allure
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -18,6 +17,8 @@ class TduResultsTableComponent(BaseComponent):
     Содержит колонки: Название, Клапан-партнёр, Артикул, Цена с НДС, Чертёж, Модификация
     Скриншот компонента: docs/images_component_dcad/tdu_list_page/tdu_results_table_component.png
     """
+
+    NAME_PAGE = '|Страница конфигуратор ТДУ (config2)|'
 
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
@@ -93,8 +94,15 @@ class TduResultsTableComponent(BaseComponent):
         :return: Название конфигурации
         """
         with allure.step(f'Получение названия конфигурации из строки {row_index}'):
-            # можно сделать через сохранение списка элементов, в самом тесте через индекс списка получить нужный элемент
             return self._name_by_row.get_text_element(row_index=row_index)
+
+    def save_list_name(self) -> list[str]:
+        """
+        Сохранение списка названий конфигураций
+        :return: Список названий конфигураций
+        """
+        with allure.step(f'Сохранение списка названий конфигураций'):
+            return self._name.get_text_list_element()
 
     def get_article_by_row(self, row_index: int) -> str:
         """
@@ -102,7 +110,6 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Артикул
         """
-        # можно сделать через сохранение списка элементов, в самом тесте через индекс списка получить нужный элемент
         with allure.step(f'Получение артикула из строки {row_index}'):
             return self._article_by_row.get_text_element(row_index=row_index)
 
@@ -113,7 +120,6 @@ class TduResultsTableComponent(BaseComponent):
         :return: Цена с НДС
         """
         with allure.step(f'Получение цены с НДС из строки {row_index}'):
-            # ?
             return self._price_by_row.get_float_value_from_line(row_index=row_index)
 
     def get_partner_valve_by_row(self, row_index: int) -> str:
@@ -122,7 +128,6 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Клапан-партнёр
         """
-        # ?
         with allure.step(f'Получение клапана-партнёра из строки {row_index}'):
             return self._partner_valve_by_row.get_text_element(row_index=row_index)
 
@@ -138,14 +143,13 @@ class TduResultsTableComponent(BaseComponent):
             self._base_page.checking_the_download_document_in_the_download_folder(name_file=expected_name_file)
             self._base_page.delete_file_by_name_in_download_folder(file_name=expected_name_file)
 
-
     def click_modify_by_row_index(self, row_index: str) -> None:
         """
-        Клик по кнопке "Изменить" по артикулу
+        Клик по кнопке "Изменить" по номеру строчки
         Открывает страницу редактора конфигурации TDU
-        :param row_index: Артикул товара
+        :param row_index: Номер строки
         """
-        with allure.step(f'Клик по кнопке "Изменить" для артикула {row_index}'):
+        with allure.step(f'Клик по кнопке "Изменить" на строке {row_index}'):
             self._btn_modify_by_row.click(row_index=row_index)
             self._base_page.switching_window_by_num_window(-1)
 
@@ -190,6 +194,7 @@ class TduResultsTableComponent(BaseComponent):
     def check_all_names_contain(self, expected_text: str) -> None:
         with allure.step(f'Проверка, что все названия в таблице содержат "{expected_text}"'):
             rows_count = self.get_table_rows_count()
+            # Вынести проверки через стандартные методы self._name.should_text_in_element(expected_text=expected_text, index=rows_count)
             assert rows_count > 0, 'Таблица результатов пуста'
             for i in range(1, rows_count + 1):
                 name = self.get_name_by_row(i)
