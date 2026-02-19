@@ -12,6 +12,8 @@ class LoaderDcadComponent(BaseComponent):
       Компонент Лоадер DCAD страницы
     """
 
+    NAME_PAGE = '|Лоудер страницы DCAD|'
+
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
 

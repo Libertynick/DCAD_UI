@@ -1,12 +1,12 @@
 import allure
 import pytest
 
-from base_page.base_page import BasePage
 from components.dcad_components.authorization_dcad_page import AuthorizationDcadPage
 from dcad_pages.tdu_config_2_page.tdu_config_2_page import ConfiguratorTdu2Page
 from dcad_pages.tdu_edit_config_page.tdu_edit_config_page import TduEditConfigPage
 from tools.routes.dcad_routes import DcadRoutes
 from config import TestEnvironment
+
 
 @allure.feature('DCAD')
 @allure.story('Тесты на подбор')
@@ -29,9 +29,9 @@ class TestConfig2:
         self.password_dcad = TestEnvironment.DCAD_PASSWORD
 
         self.browser = browser
-        self.page_base = BasePage(browser)
         self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
         self.config_tdu_2_page = ConfiguratorTdu2Page(browser, DcadRoutes.PAGE_CONFIG_2)
+        self.tdu_edit_config = TduEditConfigPage(browser)
 
     def open_and_auth(self, authorization_dcad_fixture) -> None:
         """
@@ -43,7 +43,7 @@ class TestConfig2:
         self.config_tdu_2_page.open()
         self.config_tdu_2_page.should_header_page_visible()
 
-    def apply_filters(self, page: ConfiguratorTdu2Page) -> None:
+    def apply_filters(self, page: ConfiguratorTdu2Page):
         """
         Применение фильтров на странице конфигуратора TDU
         :param page: Страница конфигуратора TDU
@@ -56,7 +56,7 @@ class TestConfig2:
         page.filter_component.select_branch_valves(self.FILTER_PARAMS["branch_valves"])
 
     @allure.title('Конфигуратор TDU - Список: проверка результатов таблицы после фильтров')
-    def test_table_has_results_after_filters(self, authorization_dcad_fixture) -> None:
+    def test_table_has_results_after_filters(self, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
@@ -66,7 +66,7 @@ class TestConfig2:
         self.config_tdu_2_page.results_table_component.check_all_articles_not_empty()
 
     @allure.title('Конфигуратор TDU - Список: скачивание чертежей всех строк')
-    def test_download_drawings_all_rows(self, authorization_dcad_fixture) -> None:
+    def test_download_drawings_all_rows(self, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
@@ -76,26 +76,18 @@ class TestConfig2:
             self.config_tdu_2_page.results_table_component.download_drawing_by_row_index(row_index=row_index)
 
     @allure.title('Конфигуратор TDU - Список: открытие редактора для всех строк')
-    def test_open_editor_all_rows(self, browser, authorization_dcad_fixture) -> None:
+    def test_open_editor_all_rows(self, browser, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
 
         main_window = browser.current_window_handle
-        rows_count = self.config_tdu_2_page.results_table_component.get_table_rows_count()
-        names = [
-            self.config_tdu_2_page.results_table_component.get_name_by_row(i)
-            for i in range(1, rows_count + 1)
-        ]
+        names = self.config_tdu_2_page.results_table_component.save_list_name()
 
-        for row_index, expected_name in enumerate(names, start=1):
-            self.config_tdu_2_page.results_table_component.click_modify_by_row_index(row_index=row_index)
+        with allure.step(f'Проверка кнопки Изменить для каждой конфигурации ТДУ'):
+            for row_index, expected_name in enumerate(names, start=1):
+                self.config_tdu_2_page.results_table_component.click_modify_by_row_index(row_index=row_index)
+                self.tdu_edit_config.should_start_config_by_name_config(expected_start_config=expected_name)
 
-            editor_page = TduEditConfigPage(browser)
-            actual_name = editor_page.get_initial_config_name()
-            assert expected_name == actual_name, (
-                f'Строка {row_index}: ожидалось "{expected_name}", получили "{actual_name}"'
-            )
-
-            browser.close()
-            browser.switch_to.window(main_window)
+                browser.close()
+                browser.switch_to.window(main_window)
