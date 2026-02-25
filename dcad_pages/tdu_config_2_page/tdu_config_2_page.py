@@ -32,5 +32,5 @@ class ConfiguratorTdu2Page(BasePage):
 
     def should_header_page_visible(self) -> None:
         """Проверка отображения заголовка страницы"""
-        with allure.step('Проверка отображения заголовка страницы "Конфигуратор TDU"'):
+        with allure.step(f'{self.NAME_PAGE} Проверка отображения заголовка страницы "Конфигуратор TDU"'):
             self._header_configurator_tdu.wait_visible_on_page()

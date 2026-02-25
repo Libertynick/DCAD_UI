@@ -15,7 +15,7 @@ class HeaderDcadComponent(BaseComponent):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
 
-        # Buttons - навигация
+        # Button
         self._btn_configurator_tdu = Button(
             driver,
             "//a[text()='Конфигуратор TDU']","Конфигуратор TDU"
@@ -31,12 +31,12 @@ class HeaderDcadComponent(BaseComponent):
 
     def click_login_button(self) -> None:
         """Клик по кнопке Войти"""
-        with allure.step('Клик по кнопке Войти в шапке DCAD'):
+        with allure.step(f'{self.NAME_PAGE} Клик по кнопке Войти в шапке DCAD'):
             self._btn_login.click()
 
     def click_btn_configurator_tdu(self) -> None:
         """Клик по кнопке Войти"""
-        with allure.step('Клик по кнопке Войти в шапке DCAD'):
+        with allure.step(f'{self.NAME_PAGE} Клик по кнопке Войти в шапке DCAD'):
             self._btn_configurator_tdu.click()
 
     def is_user_logged_in(self) -> bool:
@@ -44,7 +44,7 @@ class HeaderDcadComponent(BaseComponent):
         Проверка, что пользователь авторизован
         :return: True если пользователь авторизован, False если нет
         """
-        with allure.step('Проверка авторизации пользователя в DCAD'):
+        with allure.step(f'{self.NAME_PAGE} Проверка авторизации пользователя в DCAD'):
             elements = self._text_user_email.find_elements_safely()
             is_logged = len(elements) > 0
             if is_logged:
@@ -54,5 +54,5 @@ class HeaderDcadComponent(BaseComponent):
             return is_logged
 
     def wait_user_logged_in(self) -> None:
-        with allure.step('Ожидание авторизации пользователя'):
+        with allure.step(f'{self.NAME_PAGE} Ожидание авторизации пользователя'):
             self._text_user_email.wait_visible_on_page()

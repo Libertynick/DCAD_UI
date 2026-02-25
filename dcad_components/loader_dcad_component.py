@@ -17,6 +17,7 @@ class LoaderDcadComponent(BaseComponent):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
 
+        # Loader
         self._loader_after_price = Loader(
             driver,
             "//div[@data-bind='visible: IsCalculating' and @class='form-group row align-items-center justify-content-md-center mt-2']//span[@class='spinner-grow spinner-grow-sm']",
@@ -24,7 +25,7 @@ class LoaderDcadComponent(BaseComponent):
 
     def waiting_for_loader_no_text_processing_on_page(self, timeout: int = 60):
         """Ожидание отработки лоадера после нажатия на кнопку Цена. Ожидает невидимость на странице"""
-        with allure.step(f'Ожидание отработки лоадера без текста. Максимальное время ожидания - {timeout}'):
+        with allure.step(f'{self.NAME_PAGE} Ожидание отработки лоадера без текста. Максимальное время ожидания - {timeout}'):
             step_time = 5
             time_wait = 0
 

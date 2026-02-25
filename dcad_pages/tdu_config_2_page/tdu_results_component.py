@@ -75,7 +75,7 @@ class TduResultsTableComponent(BaseComponent):
 
     def should_table_title_visible(self) -> None:
         """Проверка отображения заголовка таблицы"""
-        with allure.step('Проверка отображения заголовка таблицы результатов'):
+        with allure.step(f'{self.NAME_PAGE} Проверка отображения заголовка таблицы результатов'):
             self._table_title.wait_visible_on_page()
 
     def get_table_rows_count(self) -> int:
@@ -83,7 +83,7 @@ class TduResultsTableComponent(BaseComponent):
         Получение количества строк в таблице результатов
         :return: Количество строк
         """
-        with allure.step('Получение количества строк в таблице'):
+        with allure.step(f'{self.NAME_PAGE} Получение количества строк в таблице'):
             rows = self._table_rows.find_elements_safely()
             return len(rows)
 
@@ -93,7 +93,7 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Название конфигурации
         """
-        with allure.step(f'Получение названия конфигурации из строки {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Получение названия конфигурации из строки {row_index}'):
             return self._name_by_row.get_text_element(row_index=row_index)
 
     def save_list_name(self) -> list[str]:
@@ -101,7 +101,7 @@ class TduResultsTableComponent(BaseComponent):
         Сохранение списка названий конфигураций
         :return: Список названий конфигураций
         """
-        with allure.step(f'Сохранение списка названий конфигураций'):
+        with allure.step(f'{self.NAME_PAGE} Сохранение списка названий конфигураций'):
             return self._name.get_text_list_element()
 
     def get_article_by_row(self, row_index: int) -> str:
@@ -110,7 +110,7 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Артикул
         """
-        with allure.step(f'Получение артикула из строки {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Получение артикула из строки {row_index}'):
             return self._article_by_row.get_text_element(row_index=row_index)
 
     def get_price_by_row(self, row_index: int) -> float:
@@ -119,7 +119,7 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Цена с НДС
         """
-        with allure.step(f'Получение цены с НДС из строки {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Получение цены с НДС из строки {row_index}'):
             return self._price_by_row.get_float_value_from_line(row_index=row_index)
 
     def get_partner_valve_by_row(self, row_index: int) -> str:
@@ -128,7 +128,7 @@ class TduResultsTableComponent(BaseComponent):
         :param row_index: Номер строки (начиная с 1)
         :return: Клапан-партнёр
         """
-        with allure.step(f'Получение клапана-партнёра из строки {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Получение клапана-партнёра из строки {row_index}'):
             return self._partner_valve_by_row.get_text_element(row_index=row_index)
 
     def download_drawing_by_row_index(self, row_index: int) -> None:
@@ -136,7 +136,7 @@ class TduResultsTableComponent(BaseComponent):
         Скачивание чертежа по артикулу
         :param row_index: Артикул товара
         """
-        with allure.step(f'Скачивание чертежа из строки {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Скачивание чертежа из строки {row_index}'):
             expected_name_file = f'{self.get_name_by_row(row_index)}.zip'
             self._base_page.delete_file_by_name_in_download_folder(file_name=expected_name_file)
             self._btn_drawing_by_row.click(row_index=row_index)
@@ -149,7 +149,7 @@ class TduResultsTableComponent(BaseComponent):
         Открывает страницу редактора конфигурации TDU
         :param row_index: Номер строки
         """
-        with allure.step(f'Клик по кнопке "Изменить" на строке {row_index}'):
+        with allure.step(f'{self.NAME_PAGE} Клик по кнопке "Изменить" на строке {row_index}'):
             self._btn_modify_by_row.click(row_index=row_index)
             self._base_page.switching_window_by_num_window(-1)
 
@@ -158,7 +158,7 @@ class TduResultsTableComponent(BaseComponent):
         Получение всех артикулов из таблицы результатов
         :return: Список артикулов
         """
-        with allure.step('Получение всех артикулов из таблицы результатов'):
+        with allure.step(f'{self.NAME_PAGE} Получение всех артикулов из таблицы результатов'):
             return self._name.get_text_list_element()
 
     def check_table_contains_article(self, expected_article: str) -> None:
@@ -166,7 +166,7 @@ class TduResultsTableComponent(BaseComponent):
         Проверка наличия артикула в таблице результатов
         :param expected_article: Ожидаемый артикул
         """
-        with allure.step(f'Проверка наличия артикула {expected_article} в таблице'):
+        with allure.step(f'{self.NAME_PAGE} Проверка наличия артикула {expected_article} в таблице'):
             articles = self.get_all_articles_from_table()
             assertions.assert_contains(
                 actual_value=articles,
@@ -181,7 +181,7 @@ class TduResultsTableComponent(BaseComponent):
         Проверка количества результатов в таблице
         :param expected_count: Ожидаемое количество строк
         """
-        with allure.step(f'Проверка количества результатов в таблице: {expected_count}'):
+        with allure.step(f'{self.NAME_PAGE} Проверка количества результатов в таблице: {expected_count}'):
             actual_count = self.get_table_rows_count()
             assertions.assert_eq(
                 actual_value=actual_count,
@@ -192,7 +192,7 @@ class TduResultsTableComponent(BaseComponent):
             )
 
     def check_all_names_contain(self, expected_text: str) -> None:
-        with allure.step(f'Проверка, что все названия в таблице содержат "{expected_text}"'):
+        with allure.step(f'{self.NAME_PAGE} Проверка, что все названия в таблице содержат "{expected_text}"'):
             rows_count = self.get_table_rows_count()
             # Вынести проверки через стандартные методы self._name.should_text_in_element(expected_text=expected_text, index=rows_count)
             assert rows_count > 0, 'Таблица результатов пуста'
@@ -203,7 +203,7 @@ class TduResultsTableComponent(BaseComponent):
                 )
 
     def check_partner_valve_column(self, filter_value: str) -> None:
-        with allure.step(f'Проверка колонки Клапан-партнёр при фильтре "{filter_value}"'):
+        with allure.step(f'{self.NAME_PAGE} Проверка колонки Клапан-партнёр при фильтре "{filter_value}"'):
             rows_count = self.get_table_rows_count()
             for i in range(1, rows_count + 1):
                 valve = self.get_partner_valve_by_row(i)
@@ -213,7 +213,7 @@ class TduResultsTableComponent(BaseComponent):
                     assert valve != 'Нет', f'Строка {i}: клапан-партнёр не должен быть "Нет", получили "{valve}"'
 
     def check_all_articles_not_empty(self) -> None:
-        with allure.step('Проверка, что все артикулы в таблице не пустые'):
+        with allure.step(f'{self.NAME_PAGE} Проверка, что все артикулы в таблице не пустые'):
             rows_count = self.get_table_rows_count()
             for i in range(1, rows_count + 1):
                 article = self.get_article_by_row(i)

@@ -55,6 +55,7 @@ class AuthorizationDcadPage(BasePage):
         """
         with allure.step(f'{self.NAME_PAGE} Заполнение поля Email: {email}'):
             self._input_email.filling_input(email)
+            self._input_email.should_value_in_input_field(expected_value=email)
 
     def filling_password(self, password: str) -> None:
         """
@@ -63,6 +64,7 @@ class AuthorizationDcadPage(BasePage):
         """
         with allure.step(f'{self.NAME_PAGE} Заполнение поля Пароль'):
             self._input_password.filling_input(password)
+            self._input_password.should_value_in_input_field(expected_value=password)
 
     def click_btn_submit(self) -> None:
         """Клик по кнопке Войти"""

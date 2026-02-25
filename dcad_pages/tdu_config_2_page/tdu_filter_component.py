@@ -68,7 +68,7 @@ class TduFilterComponent(BaseComponent):
 
     def select_branches(self, branches: str) -> None:
         """Выбор количества отводов"""
-        with allure.step(f'{self.NAME_PAGE}Выбор количества отводов: {branches}'):
+        with allure.step(f'{self.NAME_PAGE} Выбор количества отводов: {branches}'):
             self._option_dropdown_branches.select_option(branches)
             selected_value = self.get_selected_branches()
 
