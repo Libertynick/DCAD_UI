@@ -16,7 +16,7 @@ class TduEditModalComponent(BaseComponent):
 
     NAME_PAGE = '|Модальное окно результата расчёта TDU|'
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver: WebDriver) -> None:
         super().__init__(driver)
 
         self._base_page = BasePage(driver)
@@ -40,27 +40,25 @@ class TduEditModalComponent(BaseComponent):
             "Кнопка Чертёж"
         )
 
-
     def should_modal_visible(self) -> None:
-        """Модальное окно должно быть видимо"""
         with allure.step(f'{self.NAME_PAGE} Проверка отображения модального окна'):
             self._modal_title.wait_visible_on_page()
 
     def get_calculation_id(self) -> str:
-        """Получение ID расчёта"""
         with allure.step(f'{self.NAME_PAGE} Получение ID расчёта'):
+            self._calculation_id.wait_visible_on_page(timeout=10.0)
             return self._calculation_id.get_text_element()
 
     def click_download_drawing(self) -> None:
         """
-        Клик по кнопке Чертёж и проверка скачивания zip файла
+        Клик по кнопке Чертёж и проверка скачивания zip файла.
         Имя файла формируется как TDU{calculation_id}.zip
         """
         with allure.step(f'{self.NAME_PAGE} Скачивание чертежа'):
-            calculation_id = self._calculation_id.get_text_element(timeout=10.0)
+            calculation_id = self.get_calculation_id()
             expected_file_name = f'TDU{calculation_id}.zip'
 
             self._base_page.delete_file_by_name_in_download_folder(expected_file_name)
-            self._btn_drawing.click(timeout=10)
+            self._btn_drawing.click(timeout=10.0)
             self._base_page.checking_the_download_document_in_the_download_folder(expected_file_name)
             self._base_page.delete_file_by_name_in_download_folder(expected_file_name)

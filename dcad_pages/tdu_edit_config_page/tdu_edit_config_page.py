@@ -1,5 +1,6 @@
 import allure
 from selenium.webdriver.chrome.webdriver import WebDriver
+
 from base_page.base_page import BasePage
 from dcad_pages.tdu_edit_config_page.tdu_edit_modal_component import TduEditModalComponent
 from elements.button import Button
@@ -17,7 +18,7 @@ class TduEditConfigPage(BasePage):
 
     NAME_PAGE = '|Страница редактирования конфигурации TDU|'
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver: WebDriver) -> None:
         super().__init__(driver)
 
         self.result_modal = TduEditModalComponent(driver)
@@ -25,7 +26,7 @@ class TduEditConfigPage(BasePage):
         # Input
         self._initial_config = Input(
             driver,
-            "//input[@id = 'startConfig']",
+            "//input[@id='startConfig']",
             "Начальная конфигурация"
         )
         self._result_name = Input(
@@ -33,7 +34,6 @@ class TduEditConfigPage(BasePage):
             "//input[@id='autoName']",
             "Название после расчёта"
         )
-
         self._result_price = Input(
             driver,
             "//input[@id='pricePreview']",
@@ -65,7 +65,6 @@ class TduEditConfigPage(BasePage):
             "//select[@data-bind='value: inputBvDn']",
             "Диаметр вводной группы"
         )
-
         self._select_partner_valve = Options(
             driver,
             "//select[@aria-describedby='inputPartnerIdHelp']",
@@ -84,10 +83,6 @@ class TduEditConfigPage(BasePage):
             return self._initial_config.get_value()
 
     def should_start_config_by_name_config(self, expected_start_config: str) -> None:
-        """
-        Должно быть определенное название в поле Начальная конфигурация
-        :param expected_start_config: Ожидаемое название в поле Начальная конфигурация:
-        """
         with allure.step(f'{self.NAME_PAGE} Проверка, что в поле Начальная конфигурация значение- {expected_start_config}'):
             name_on_page = self._initial_config.get_value()
             assertions.assert_eq(
@@ -105,23 +100,16 @@ class TduEditConfigPage(BasePage):
             self._result_name.scroll_to_elem_js()
 
     def get_result_name(self) -> str:
-        """Получение названия конфигурации из результата расчёта"""
         with allure.step(f'{self.NAME_PAGE} Получение названия из результата расчёта'):
             return self._result_name.get_value()
 
     def get_result_price(self) -> float:
-        """Получение цены из результата расчёта"""
         with allure.step(f'{self.NAME_PAGE} Получение цены из результата расчёта'):
             return self._result_price.get_float_value_from_input()
 
     def should_result_name_eq(self, expected_name: str) -> None:
-        """
-        Название после расчёта должно совпадать с ожидаемым
-        :param expected_name: Ожидаемое название конфигурации
-        """
         with allure.step(f'{self.NAME_PAGE} Проверка названия конфигурации после расчёта - {expected_name}'):
             actual_name = self.get_result_name()
-
             assertions.assert_eq(
                 actual_value=actual_name,
                 expected_value=expected_name,
@@ -131,15 +119,9 @@ class TduEditConfigPage(BasePage):
             )
 
     def should_result_price_within_tolerance(self, expected_price: float, tolerance: float = 0.07) -> None:
-        """
-        Цена после расчёта должна отличаться от ожидаемой не более чем на tolerance
-        :param expected_price: Ожидаемая цена из Config2
-        :param tolerance: Допустимое отклонение (по умолчанию 7%)
-        """
         with allure.step(f'{self.NAME_PAGE} Проверка цены после расчёта. Ожидаемая - {expected_price}, допуск - {tolerance * 100}%'):
             actual_price = self.get_result_price()
             deviation = abs(actual_price - expected_price) / expected_price
-
             assertions.assert_less_than(
                 actual_value=deviation,
                 less_value=tolerance,
@@ -150,48 +132,57 @@ class TduEditConfigPage(BasePage):
             )
 
     def should_canvas_visible(self) -> None:
-        """Схема конфигурации должна отображаться"""
         with allure.step(f'{self.NAME_PAGE} Проверка отображения схемы конфигурации'):
             self._canvas_draw.wait_visible_on_page()
 
     def click_create_calculation(self) -> None:
-        """Клик по кнопке Создать расчёт и ожидание открытия модального окна"""
         with allure.step(f'{self.NAME_PAGE} Клик по кнопке Создать расчёт'):
             self._btn_create_calculation.click()
             self.result_modal.should_modal_visible()
 
     def select_inlet_diameter(self, value: str) -> None:
-        """
-        Выбор диаметра вводной группы
-        :param value: Значение диаметра для выбора
-        """
         with allure.step(f'{self.NAME_PAGE} Выбор диаметра вводной группы - {value}'):
+            self._select_inlet_diameter.wait_visible_on_page(timeout=10.0)
+            self._select_inlet_diameter.scroll_to_elem_js()
             self._select_inlet_diameter.select_option(value)
-            self._select_inlet_diameter.should_text_in_element(expected_text=value)
+            selected = self._select_inlet_diameter.get_selected_text()
+            assertions.assert_eq(
+                actual_value=selected,
+                expected_value=value,
+                allure_title='Проверяем выбранный диаметр вводной группы',
+                error_message=f'Несоответствие выбранного диаметра вводной группы. '
+                              f'На странице - {selected}; ожидаемое - {value}'
+            )
 
     def select_partner_valve(self, value: str) -> None:
-        """
-        Выбор клапана-партнёра
-        :param value: Значение клапана для выбора
-        """
         with allure.step(f'{self.NAME_PAGE} Выбор клапана-партнёра - {value}'):
+            self._select_partner_valve.wait_visible_on_page(timeout=10.0)
+            self._select_partner_valve.scroll_to_elem_js()
             self._select_partner_valve.select_option(value)
-            # Проверить, что выбрано нужное значение
+            selected = self._select_partner_valve.get_selected_text()
+            assertions.assert_eq(
+                actual_value=selected,
+                expected_value=value,
+                allure_title='Проверяем выбранный клапан-партнёр',
+                error_message=f'Несоответствие выбранного клапана-партнёра. '
+                              f'На странице - {selected}; ожидаемое - {value}'
+            )
 
-    def click_checkbox_brackets(self) -> None:
-        """Клик по чекбоксу Кронштейны"""
-        with allure.step(f'{self.NAME_PAGE} Клик по чекбоксу Кронштейны'):
+    def check_brackets(self) -> None:
+        """Установить галку Кронштейны"""
+        with allure.step(f'{self.NAME_PAGE} Установка галки Кронштейны'):
             self._checkbox_brackets.click()
-            # Проверить выбран ли чек-бокс. Разделить методы на выбор и на отмену выбора чек-бокса
+            self._checkbox_brackets.should_check_box_selected()
+
+    def uncheck_brackets(self) -> None:
+        """Снять галку Кронштейны"""
+        with allure.step(f'{self.NAME_PAGE} Снятие галки Кронштейны'):
+            self._checkbox_brackets.click()
+            self._checkbox_brackets.should_check_box_not_selected()
 
     def should_result_name_contains(self, expected_text: str) -> None:
-        """
-        Название после расчёта должно содержать ожидаемый текст
-        :param expected_text: Ожидаемый текст в названии конфигурации
-        """
         with allure.step(f'{self.NAME_PAGE} Проверка, что название после расчёта содержит - {expected_text}'):
             actual_name = self.get_result_name()
-
             assertions.assert_contains(
                 actual_value=actual_name,
                 expected_contains=expected_text,
@@ -201,13 +192,8 @@ class TduEditConfigPage(BasePage):
             )
 
     def should_result_price_changed(self, price_before: float) -> None:
-        """
-        Цена после расчёта должна отличаться от переданной
-        :param price_before: Цена до изменения параметра
-        """
         with allure.step(f'{self.NAME_PAGE} Проверка, что цена изменилась. Цена до - {price_before}'):
             actual_price = self.get_result_price()
-
             assertions.assert_not_eq(
                 actual_value=actual_price,
                 value_not_eq=price_before,

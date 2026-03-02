@@ -56,7 +56,7 @@ class TestConfig2:
         page.filter_component.select_branch_valves(self.FILTER_PARAMS["branch_valves"])
 
     @allure.title('Конфигуратор TDU - Список: проверка результатов таблицы после фильтров')
-    def test_table_has_results_after_filters(self, authorization_dcad_fixture):
+    def test_table_has_results_after_filters_58342(self, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
@@ -66,7 +66,7 @@ class TestConfig2:
         self.config_tdu_2_page.results_table_component.check_all_articles_not_empty()
 
     @allure.title('Конфигуратор TDU - Список: скачивание чертежей всех строк')
-    def test_download_drawings_all_rows(self, authorization_dcad_fixture):
+    def test_download_drawings_all_rows_58342(self, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
@@ -76,7 +76,7 @@ class TestConfig2:
             self.config_tdu_2_page.results_table_component.download_drawing_by_row_index(row_index=row_index)
 
     @allure.title('Конфигуратор TDU - Список: открытие редактора для всех строк')
-    def test_open_editor_all_rows(self, browser, authorization_dcad_fixture):
+    def test_open_editor_all_rows_58342(self, browser, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
