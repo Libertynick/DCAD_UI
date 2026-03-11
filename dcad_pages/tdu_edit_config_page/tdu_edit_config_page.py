@@ -84,8 +84,8 @@ class TduEditConfigPage(BasePage):
 
     def should_start_config_by_name_config(self, expected_start_config: str) -> None:
         with allure.step(f'{self.NAME_PAGE} Проверка, что в поле Начальная конфигурация значение- {expected_start_config}'):
-            name_on_page = self._initial_config.get_value()
-
+            self._initial_config.wait_visible_on_page(timeout=15.0)
+            name_on_page = self._initial_config.get_attribute_by_name('title')
             assertions.assert_eq(
                 actual_value=name_on_page,
                 expected_value=expected_start_config,
