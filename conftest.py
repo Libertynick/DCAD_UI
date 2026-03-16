@@ -70,6 +70,7 @@ def screen(browser, path):
 def pytest_addoption(parser):
     parser.addoption('--browser_name', action='store', default='chrome',
                      help="Choose driver: chrome or firefox")
+    parser.addoption('--env', action='store', default='stage', choices=['stage', 'prod'])
 
 
 def get_cpu_usage():
