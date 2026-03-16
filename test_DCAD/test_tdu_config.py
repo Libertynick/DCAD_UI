@@ -10,21 +10,35 @@ from config import TestEnvironment
 @allure.feature('DCAD')
 @allure.story('Конфигуратор TDU (Config)')
 @pytest.mark.stage
+@pytest.mark.prod
 class TestTduConfig:
     """Тесты на страницу Конфигуратор TDU (Config)"""
 
     @pytest.fixture(autouse=True)
-    def setup(self, browser) -> None:
+    def setup(self, browser, dcad_env) -> None:
         self.browser = browser
-        self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
-        self.config_page = TduConfigPage(browser, DcadRoutes.PAGE_CONFIG)
+        self.login = dcad_env['login']
+        self.password = dcad_env['password']
+        self.auth_dcad = AuthorizationDcadPage(browser, dcad_env['routes'].PAGE_AUTHORIZATION)
+        self.config_page = TduConfigPage(browser, dcad_env['routes'].PAGE_CONFIG)
 
     def _auth_and_open_config(self, authorization_dcad_fixture) -> None:
-        """Авторизация и открытие страницы Config"""
         self.auth_dcad.open()
-        authorization_dcad_fixture(TestEnvironment.DCAD_LOGIN, TestEnvironment.DCAD_PASSWORD)
+        authorization_dcad_fixture(self.login, self.password)
         self.config_page.open()
-        self.config_page.should_header_visible()
+
+    # @pytest.fixture(autouse=True)
+    # def setup(self, browser) -> None:
+    #     self.browser = browser
+    #     self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
+    #     self.config_page = TduConfigPage(browser, DcadRoutes.PAGE_CONFIG)
+    #
+    # def _auth_and_open_config(self, authorization_dcad_fixture) -> None:
+    #     """Авторизация и открытие страницы Config"""
+    #     self.auth_dcad.open()
+    #     authorization_dcad_fixture(TestEnvironment.DCAD_LOGIN, TestEnvironment.DCAD_PASSWORD)
+    #     self.config_page.open()
+    #     self.config_page.should_header_visible()
 
     def _auth_open_and_configure(self, authorization_dcad_fixture) -> None:
         """Авторизация, открытие страницы, выбор первой конфигурации и клик Конфигурация"""

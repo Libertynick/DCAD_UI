@@ -17,7 +17,8 @@ class ConfiguratorTdu2Page(BasePage):
     """
     NAME_PAGE = '|Страница конфигуратор ТДУ (config2)|'
 
-    def __init__(self, driver: WebDriver, url: str = DcadRoutes.PAGE_CONFIG_2):
+    def __init__(self, driver: WebDriver, url: str = None) -> None:
+    #def __init__(self, driver: WebDriver, url: str = DcadRoutes.PAGE_CONFIG_2):
         super().__init__(driver, url)
 
         # Components

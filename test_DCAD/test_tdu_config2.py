@@ -11,6 +11,7 @@ from config import TestEnvironment
 @allure.feature('DCAD')
 @allure.story('Тесты на подбор')
 @pytest.mark.stage
+@pytest.mark.prod
 class TestConfig2:
     """Тесты на Конфиг 2"""
 
@@ -24,22 +25,18 @@ class TestConfig2:
     }
 
     @pytest.fixture(autouse=True)
-    def setup(self, browser):
-        self.login_dcad = TestEnvironment.DCAD_LOGIN
-        self.password_dcad = TestEnvironment.DCAD_PASSWORD
-
+    def setup(self, browser, dcad_env) -> None:
         self.browser = browser
-        self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
-        self.config_tdu_2_page = ConfiguratorTdu2Page(browser, DcadRoutes.PAGE_CONFIG_2)
+        self.login = dcad_env['login']
+        self.password = dcad_env['password']
+        self.auth_dcad = AuthorizationDcadPage(browser, dcad_env['routes'].PAGE_AUTHORIZATION)
+        self.config_tdu_2_page = ConfiguratorTdu2Page(browser, dcad_env['routes'].PAGE_CONFIG_2)
         self.tdu_edit_config = TduEditConfigPage(browser)
 
     def open_and_auth(self, authorization_dcad_fixture) -> None:
-        """
-        Открытие страницы авторизации и авторизация
-        :param authorization_dcad_fixture: Фикстура авторизации
-        """
+        """Открытие страницы авторизации и авторизация"""
         self.auth_dcad.open()
-        authorization_dcad_fixture(self.login_dcad, self.password_dcad)
+        authorization_dcad_fixture(self.login, self.password)
         self.config_tdu_2_page.open()
         self.config_tdu_2_page.should_header_page_visible()
 

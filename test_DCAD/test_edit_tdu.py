@@ -12,21 +12,24 @@ from config import TestEnvironment
 @allure.feature('DCAD')
 @allure.story('Редактор конфигурации TDU')
 @pytest.mark.stage
+@pytest.mark.prod
 class TestTduEditConfig:
     """Тесты на Редактор конфигурации TDU"""
 
     @pytest.fixture(autouse=True)
-    def setup(self, browser) -> None:
+    def setup(self, browser, dcad_env) -> None:
         self.browser = browser
+        self.login = dcad_env['login']
+        self.password = dcad_env['password']
         self.page_base = BasePage(browser)
-        self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
-        self.config_tdu_2_page = ConfiguratorTdu2Page(browser, DcadRoutes.PAGE_CONFIG_2)
+        self.auth_dcad = AuthorizationDcadPage(browser, dcad_env['routes'].PAGE_AUTHORIZATION)
+        self.config_tdu_2_page = ConfiguratorTdu2Page(browser, dcad_env['routes'].PAGE_CONFIG_2)
         self.edit_page = TduEditConfigPage(browser)
 
     def _auth_and_open_config2(self, authorization_dcad_fixture) -> None:
         """Авторизация и открытие страницы Config2"""
         self.auth_dcad.open()
-        authorization_dcad_fixture(TestEnvironment.DCAD_LOGIN, TestEnvironment.DCAD_PASSWORD)
+        authorization_dcad_fixture(self.login, self.password)
         self.config_tdu_2_page.open()
         self.config_tdu_2_page.should_header_page_visible()
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
