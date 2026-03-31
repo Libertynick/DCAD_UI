@@ -75,7 +75,7 @@ class TestTduConfig:
 
         self.config_page.should_auto_name_contains_in_config(first_config)
 
-    @pytest.mark.skip(reason='Баг: цена отображается как 0 после нажатия Конфигурация. Вернуться после фикса')
+    @pytest.mark.xfail(reason='Баг: цена отображается как 0 после нажатия Конфигурация. Вернуться после фикса https://rucotfs.ridancorp.net/DanfossDev/Danfoss/_workitems/edit/58606')
     @allure.title('Конфигуратор TDU - Конфигурация: цена больше нуля после выбора конфигурации')
     def test_price_greater_than_zero_after_configuration(self, authorization_dcad_fixture) -> None:
         self._auth_and_open_config(authorization_dcad_fixture)

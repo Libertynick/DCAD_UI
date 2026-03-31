@@ -183,7 +183,7 @@ class TduConfigPage(BasePage):
         """Клик по кнопке Превью"""
         with allure.step(f'{self.NAME_PAGE} Клик по кнопке Превью'):
             self._btn_preview.scroll_to_elem_js()
-            self._btn_preview.click()
+            self._btn_preview.click(timeout=10.0)
 
     def should_canvas_visible(self) -> None:
         """Проверка отображения схемы конфигурации"""
@@ -195,7 +195,7 @@ class TduConfigPage(BasePage):
         """Клик по кнопке Создать конфигурацию и ожидание модального окна"""
         with allure.step(f'{self.NAME_PAGE} Клик по кнопке Создать конфигурацию'):
             self._btn_create_configuration.scroll_to_elem_js()
-            self._btn_create_configuration.click()
+            self._btn_create_configuration.click(timeout=10.0)
             self.result_modal.should_modal_visible()
 
     def click_download_drawing(self) -> None:

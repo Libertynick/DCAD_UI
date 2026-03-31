@@ -26,7 +26,7 @@ def dcad_env(request):
 @pytest.fixture(scope='session', autouse=True)
 def allure_environment(request, dcad_env):
     env = request.config.getoption('--env')
-    allure_dir = 'allure-results'
+    allure_dir = 'allure_res'
 
     if env == 'prod':
         url = os.getenv('DCAD_URL_PROD')

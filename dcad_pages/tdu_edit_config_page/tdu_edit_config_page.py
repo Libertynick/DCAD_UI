@@ -138,7 +138,8 @@ class TduEditConfigPage(BasePage):
 
     def click_create_calculation(self) -> None:
         with allure.step(f'{self.NAME_PAGE} Клик по кнопке Создать расчёт'):
-            self._btn_create_calculation.click()
+            self._btn_create_calculation.scroll_to_elem_js()
+            self._btn_create_calculation.click(timeout=10.0)
             self.result_modal.should_modal_visible()
 
     def select_inlet_diameter(self, value: str) -> None:

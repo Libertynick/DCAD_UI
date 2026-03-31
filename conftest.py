@@ -214,5 +214,5 @@ def browser(request):
         print(f'Скинули все подмены при запуске теста с маркировкой {expected_marker}')
 
     print('\nquit driver..')
-    # driver.close()
-    # driver.quit()
+    driver.close()
+    driver.quit()
