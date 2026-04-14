@@ -5,9 +5,6 @@ from base_page.base_page import BasePage
 from components.dcad_components.authorization_dcad_page import AuthorizationDcadPage
 from dcad_pages.tdu_config_2_page.tdu_config_2_page import ConfiguratorTdu2Page
 from dcad_pages.tdu_edit_config_page.tdu_edit_config_page import TduEditConfigPage
-from tools.routes.dcad_routes import DcadRoutes
-from config import TestEnvironment
-
 
 @allure.feature('DCAD')
 @allure.story('Редактор конфигурации TDU')

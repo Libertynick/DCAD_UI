@@ -3,6 +3,7 @@ import pytest
 
 from components.dcad_components.authorization_dcad_page import AuthorizationDcadPage
 from dcad_pages.wdu_config_page.wdu_config_page import WduConfigPage
+from tools.dcad_order_helper import create_offer, should_offer_created
 
 
 @allure.feature('DCAD')
@@ -64,16 +65,21 @@ class TestWduConfig:
         self.wdu_page.additional_options_component.select_kip(self.PARAMS['kip'])
 
     @allure.title('Конфигуратор ВДУ - Сохранение расчёта и появление номера WDU')
-    def test_save_calculation_number_appears(self, authorization_dcad_fixture) -> None:
+    def test_save_calculation_number_appears_59420(self, authorization_dcad_fixture) -> None:
         self._auth_open_and_save(authorization_dcad_fixture)
+        self.wdu_page.click_download_drawing()
+
+        material_code = self.wdu_page.get_calculation_number()
+        response = create_offer(material_code=material_code, line_type='TDU')
+        should_offer_created(response)
 
     @allure.title('Конфигуратор ВДУ - Скачивание чертежа')
-    def test_download_drawing(self, authorization_dcad_fixture) -> None:
+    def test_download_drawing_59324(self, authorization_dcad_fixture) -> None:
         self._auth_open_and_save(authorization_dcad_fixture)
         self.wdu_page.click_download_drawing()
 
     @allure.title('Конфигуратор ВДУ - Скачивание чертежа в производство')
-    def test_download_drawing_production(self, authorization_dcad_fixture) -> None:
+    def test_download_drawing_production_59324(self, authorization_dcad_fixture) -> None:
         self._auth_open_and_save(authorization_dcad_fixture)
         self.wdu_page.click_download_drawing_production()
 

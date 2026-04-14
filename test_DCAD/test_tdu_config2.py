@@ -4,8 +4,7 @@ import pytest
 from components.dcad_components.authorization_dcad_page import AuthorizationDcadPage
 from dcad_pages.tdu_config_2_page.tdu_config_2_page import ConfiguratorTdu2Page
 from dcad_pages.tdu_edit_config_page.tdu_edit_config_page import TduEditConfigPage
-from tools.routes.dcad_routes import DcadRoutes
-from config import TestEnvironment
+from tools.dcad_order_helper import create_offer, should_offer_created
 
 
 @allure.feature('DCAD')
@@ -53,14 +52,17 @@ class TestConfig2:
         page.filter_component.select_branch_valves(self.FILTER_PARAMS["branch_valves"])
 
     @allure.title('Конфигуратор TDU - Список: проверка результатов таблицы после фильтров')
-    def test_table_has_results_after_filters_58342(self, authorization_dcad_fixture):
+    def test_table_has_results_after_filters_59420(self, authorization_dcad_fixture):
         self.open_and_auth(authorization_dcad_fixture)
         self.apply_filters(self.config_tdu_2_page)
         self.config_tdu_2_page.results_table_component.should_table_title_visible()
-
         self.config_tdu_2_page.results_table_component.check_all_names_contain(self.FILTER_PARAMS["node_type"])
         self.config_tdu_2_page.results_table_component.check_partner_valve_column(self.FILTER_PARAMS["partner_valve"])
         self.config_tdu_2_page.results_table_component.check_all_articles_not_empty()
+
+        material_code = self.config_tdu_2_page.results_table_component.get_article_by_row(1)
+        response = create_offer(material_code=material_code, line_type='TDU')
+        should_offer_created(response)
 
     @allure.title('Конфигуратор TDU - Список: скачивание чертежей всех строк')
     def test_download_drawings_all_rows_58342(self, authorization_dcad_fixture):

@@ -3,9 +3,8 @@ import pytest
 
 from components.dcad_components.authorization_dcad_page import AuthorizationDcadPage
 from dcad_pages.tdu_config_page.tdu_config_page import TduConfigPage
-from tools.routes.dcad_routes import DcadRoutes
-from config import TestEnvironment
-
+from tools.dcad_order_helper import create_offer, should_offer_created
+from api_testing_project.services.dcad.api.api_tdu_offer import ApiTduOffer
 
 @allure.feature('DCAD')
 @allure.story('Конфигуратор TDU (Config)')
@@ -26,19 +25,6 @@ class TestTduConfig:
         self.auth_dcad.open()
         authorization_dcad_fixture(self.login, self.password)
         self.config_page.open()
-
-    # @pytest.fixture(autouse=True)
-    # def setup(self, browser) -> None:
-    #     self.browser = browser
-    #     self.auth_dcad = AuthorizationDcadPage(browser, DcadRoutes.PAGE_AUTHORIZATION)
-    #     self.config_page = TduConfigPage(browser, DcadRoutes.PAGE_CONFIG)
-    #
-    # def _auth_and_open_config(self, authorization_dcad_fixture) -> None:
-    #     """Авторизация и открытие страницы Config"""
-    #     self.auth_dcad.open()
-    #     authorization_dcad_fixture(TestEnvironment.DCAD_LOGIN, TestEnvironment.DCAD_PASSWORD)
-    #     self.config_page.open()
-    #     self.config_page.should_header_visible()
 
     def _auth_open_and_configure(self, authorization_dcad_fixture) -> None:
         """Авторизация, открытие страницы, выбор первой конфигурации и клик Конфигурация"""
@@ -65,15 +51,17 @@ class TestTduConfig:
         self.config_page.filter_component.should_ready_config_matches_filters(expected_type_contains)
 
     @allure.title('Конфигуратор TDU - Конфигурация: отображается автоназвание после выбора конфигурации')
-    def test_auto_name_visible_after_configuration(self, authorization_dcad_fixture) -> None:
+    def test_auto_name_visible_after_configuration_59420(self, authorization_dcad_fixture) -> None:
         self._auth_and_open_config(authorization_dcad_fixture)
-
         self.config_page.filter_component.select_node_type('Узел этажный TDU.7R')
         first_config = self.config_page.filter_component.get_first_available_config()
         self.config_page.filter_component.select_ready_config(first_config)
         self.config_page.click_btn_configuration()
-
         self.config_page.should_auto_name_contains_in_config(first_config)
+
+        material_code = f'TDU{self.config_page.get_calculation_number()}'
+        response = create_offer(material_code=material_code, line_type='TDU')
+        should_offer_created(response)
 
     @pytest.mark.xfail(reason='Баг: цена отображается как 0 после нажатия Конфигурация. Вернуться после фикса https://rucotfs.ridancorp.net/DanfossDev/Danfoss/_workitems/edit/58606')
     @allure.title('Конфигуратор TDU - Конфигурация: цена больше нуля после выбора конфигурации')
@@ -136,3 +124,19 @@ class TestTduConfig:
     def test_download_bom_from_page(self, authorization_dcad_fixture) -> None:
         self._auth_open_and_configure(authorization_dcad_fixture)
         self.config_page.click_download_bom()
+
+    @allure.title('Конфигуратор TDU - Config: API TDUOffer возвращает файл по номеру из UI')
+    def test_tdu_offer_api_with_real_calculation_number_59421(self, authorization_dcad_fixture) -> None:
+        """
+        UI: выбираем конфигурацию, получаем номер расчёта.
+        API: передаём номер (без префикса TDU) в TDUOffer, проверяем что файл в ответе есть.
+        """
+        self._auth_open_and_configure(authorization_dcad_fixture)
+
+        calc_number = self.config_page.get_calculation_number()
+        calculation_id = calc_number.replace('TDU', '')
+
+        api_tdu_offer = ApiTduOffer()
+        api_tdu_offer.get_tdu_offer(calculation_id=calculation_id)
+        api_tdu_offer.check_response_ok()
+        api_tdu_offer.check_file_in_response()
