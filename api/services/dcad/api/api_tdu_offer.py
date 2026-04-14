@@ -4,7 +4,7 @@ from api_testing_project.services.base_api import BaseApi
 
 
 DCAD_CAD_TDU_OFFER_URL = 'http://ruecom-extru-tst.ridancorp.net/DanfossCAD/API/CAD/TDUOffer'
-DCAD_CAD_AUTH_TOKEN = 'f747f02181da3099d225d5262e624474ec3c351591232c00cf99c0f96ffb643eab2296bbd93b2334e654d9abf0d5960b0ac32752391bdab4963bcbbbe909f047'
+DCAD_CAD_AUTH_TOKEN = 'f747f02181da3099d225d5262e62d9abf0d5960b0ac32752391bdab4963bcbbbe909f047'
 
 
 class ApiTduOffer(BaseApi):
